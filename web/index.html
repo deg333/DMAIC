@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#173F35">
+    <title>DMAIC Studio</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23173F35'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='22' font-style='italic' fill='%23fff' text-anchor='middle'%3E%CF%83%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/diagram-js.css">
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-js.css">
+    <link rel="stylesheet" href="vendor/bpmn-js/assets/bpmn-font/css/bpmn.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Main navigation">
+        <a class="brand" href="#" data-action="home" aria-label="DMAIC Studio home">σ</a>
+        <div class="sidebar-rule"></div>
+        <div class="sidebar-section-label">Project phases</div>
+        <button class="rail-phase workspace-button" type="button" data-action="overview" aria-label="Project workspace" title="Project workspace">
+          <span class="rail-phase-letter workspace-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="10" y="3" width="5" height="5" rx="1"/><rect x="17" y="3" width="5" height="5" rx="1"/><rect x="3" y="10" width="5" height="5" rx="1"/><rect x="10" y="10" width="5" height="5" rx="1"/><rect x="17" y="10" width="5" height="5" rx="1"/><rect x="3" y="17" width="5" height="5" rx="1"/><rect x="10" y="17" width="5" height="5" rx="1"/><rect x="17" y="17" width="5" height="5" rx="1"/></svg></span>
+          <span class="rail-phase-name">Project workspace</span>
+        </button>
+        <nav class="phase-rail" id="phase-rail" aria-label="Project phases"></nav>
+        <button class="sidebar-toggle" id="sidebar-toggle" type="button" data-action="toggle-sidebar" aria-label="Expand sidebar" aria-expanded="false"><span aria-hidden="true">›</span></button>
+        <div class="sidebar-bottom">
+          <button class="rail-icon admin-link" data-action="open-admin" aria-label="Administration" title="Administration" hidden><span aria-hidden="true">⛨</span><span class="rail-icon-label">Administration</span></button>
+          <button class="rail-icon settings-link" data-action="open-settings" aria-label="Settings" title="Settings"><span aria-hidden="true">⚙</span><span class="rail-icon-label">Settings</span></button>
+          <button class="rail-icon" data-action="backup" aria-label="Back up database" title="Back up database"><span aria-hidden="true">⇧</span><span class="rail-icon-label">Back up database</span></button>
+          <button class="rail-icon" data-action="logout" aria-label="Sign out" title="Sign out"><span aria-hidden="true">⎋</span><span class="rail-icon-label">Sign out</span></button>
+          <span class="storage-indicator" title="Projects are saved in the server's SQLite database"><i></i> Server SQLite</span>
+        </div>
+      </aside>
+
+      <main class="main-area">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="mobile-menu" id="mobile-menu" aria-label="Toggle navigation">☰</button>
+            <a class="wordmark" href="#" data-action="home">DMAIC <span>STUDIO</span></a>
+            <span class="topbar-divider"></span>
+            <button class="project-switcher" id="project-switcher" data-action="home" aria-label="Select project">
+              <span class="switcher-mark">▦</span><span id="top-project-name">All projects</span><span class="chevron">⌄</span>
+            </button>
+          </div>
+          <div class="topbar-right">
+            <span class="save-status"><i></i><span id="save-status">All changes saved</span></span>
+            <button class="icon-button" data-action="backup" title="Export SQLite database" aria-label="Export SQLite database">⇩</button>
+            <button class="avatar" data-action="open-account" aria-label="Workspace owner" title="Account">W</button>
+          </div>
+        </header>
+
+        <section class="view-container" id="view-container" aria-live="polite"></section>
+      </main>
+    </div>
+    <main class="auth-screen" id="auth-screen" aria-label="Sign in"></main>
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <dialog id="record-dialog" class="modal"></dialog>
+    <dialog id="project-dialog" class="modal"></dialog>
+    <input id="database-import" type="file" accept=".sqlite,.db,application/octet-stream" hidden>
+    <input id="bpmn-import" type="file" accept=".bpmn,.xml,application/xml,text/xml" hidden>
+    <script src="vendor/bpmn-js/bpmn-modeler.production.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
