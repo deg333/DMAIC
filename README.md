@@ -4,6 +4,14 @@ A DMAIC project-management workspace based on the supplied screen references. Th
 
 DMAIC Studio is a Rust web server (axum + SQLite) with a browser frontend. Users sign in with an account, their projects are stored in one SQLite database on the server, and a project owner can share a project with other users.
 
+## Architecture
+
+![Site topology: browsers reach Caddy over HTTPS, Caddy proxies to the Rust app, which stores data in SQLite; GitHub Actions builds the image that deploy.sh pulls onto the server](docs/topology.svg)
+
+![Database tables: accounts and settings, projects and sharing, and fifteen project record tables](docs/database.svg)
+
+Regenerate both diagrams with `node docs/generate-diagrams.js docs` after changing the schema or deployment.
+
 ## Run with Docker
 
 ```sh

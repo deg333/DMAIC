@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 800" width="1240" height="800" role="img" aria-labelledby="t d">
+  <title id="t">DMAIC Studio site topology</title>
+  <desc id="d">Browsers reach Caddy over HTTPS at dmaic.gadea.ai on the server 83.136.219.141. Caddy gets certificates from Let's Encrypt and proxies to the Rust app on an internal port. The app stores data in SQLite on the dmaic-data volume. New versions are pushed to GitHub, built by GitHub Actions, published to ghcr.io, and pulled onto the server by deploy.sh.</desc>
+  <style>
+    .bg { fill: #ffffff; }
+    .ink { fill: #18283f; }
+    .muted { fill: #5f6f84; }
+    .box { fill: #f6f8fb; stroke: #c3cdd9; stroke-width: 1.2; }
+    .group { fill: #f2f7f4; stroke: #173f35; stroke-width: 1.4; }
+    .group-soft { fill: #f7f9fc; stroke: #b9c4d1; stroke-width: 1.2; stroke-dasharray: 5 4; }
+    .edge { stroke: #5f6f84; stroke-width: 1.4; fill: none; }
+    .edge-strong { stroke: #18283f; stroke-width: 1.8; fill: none; }
+    .edge-dash { stroke: #5f6f84; stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+    .arrow { fill: #5f6f84; }
+    .arrow-strong { fill: #18283f; }
+    .label-bg { fill: #ffffff; }
+    .row-alt { fill: #eef2f7; }
+    .badge-pk { fill: #f3c64a; }
+    .badge-fk { fill: #9cc2ec; }
+    .badge-text { fill: #18283f; }
+    .acc-green { fill: #173f35; } .stroke-green { stroke: #173f35; }
+    .acc-blue { fill: #347fce; } .stroke-blue { stroke: #347fce; }
+    .acc-purple { fill: #7957c8; } .stroke-purple { stroke: #7957c8; }
+    .acc-orange { fill: #d87735; } .stroke-orange { stroke: #d87735; }
+    .acc-teal { fill: #27966f; } .stroke-teal { stroke: #27966f; }
+    .acc-gray { fill: #3d4a5c; } .stroke-gray { stroke: #3d4a5c; }
+    .on-acc { fill: #ffffff; }
+    text { font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0f1720; }
+      .ink, .badge-text { fill: #e6edf3; }
+      .muted { fill: #9aa7b5; }
+      .box { fill: #17212b; stroke: #3a4756; }
+      .group { fill: #12211c; stroke: #4fae85; }
+      .group-soft { fill: #141c25; stroke: #3a4756; }
+      .edge, .edge-dash { stroke: #9aa7b5; }
+      .edge-strong { stroke: #e6edf3; }
+      .arrow { fill: #9aa7b5; }
+      .arrow-strong { fill: #e6edf3; }
+      .label-bg { fill: #0f1720; }
+      .row-alt { fill: #1c2733; }
+      .badge-pk { fill: #b8912a; }
+      .badge-fk { fill: #3b6ea8; }
+      .acc-green { fill: #2f7a5e; } .stroke-green { stroke: #4fae85; }
+      .acc-blue { fill: #2f6fb4; } .stroke-blue { stroke: #6aa6e6; }
+      .acc-purple { fill: #6a4cb5; } .stroke-purple { stroke: #a58be6; }
+      .acc-orange { fill: #b8642c; } .stroke-orange { stroke: #ea9a63; }
+      .acc-teal { fill: #23805f; } .stroke-teal { stroke: #5cc39d; }
+      .acc-gray { fill: #4a586b; } .stroke-gray { stroke: #8795a8; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow"/>
+    </marker>
+    <marker id="arrow-strong" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-strong"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1240" height="800"/>
+  <text class="ink" x="40" y="44" font-size="22" font-weight="700">DMAIC Studio · site topology</text>
+  <text class="muted" x="40" y="66" font-size="13">How a request reaches the app, where data lives, and how new versions get to the server.</text>
+  <rect class="group" x="360" y="96" width="840" height="430" rx="14"/>
+  <text class="ink" x="382" y="124" font-size="15" font-weight="700">Server 83.136.219.141</text>
+  <text class="muted" x="382" y="143" font-size="12">Docker Compose project "dmaic" (DMAIC/deploy) · only ports 80 and 443 are open to the internet</text>
+  <g>
+    <rect class="box" x="40" y="150" width="250" height="132" rx="9"/>
+    <path class="acc-blue" d="M40 159 a9 9 0 0 1 9 -9 h232 a9 9 0 0 1 9 9 v37 h-250 z"/>
+    <text class="on-acc" x="54" y="171" font-size="14" font-weight="700">Users' browsers</text>
+    <text class="on-acc" x="54" y="188" font-size="11.5" opacity="0.9">Web app: HTML, CSS, JavaScript</text>
+    <text class="ink" x="54" y="216" font-size="12.5">Projects, phases, BPMN.js editor</text>
+    <text class="ink" x="54" y="235" font-size="12.5">Session cookie: HttpOnly, Secure</text>
+    <text class="ink" x="54" y="254" font-size="12.5">Calls /api with X-DMAIC header</text>
+  </g>
+  <g>
+    <rect class="box" x="40" y="330" width="250" height="96" rx="9"/>
+    <path class="acc-teal" d="M40 339 a9 9 0 0 1 9 -9 h232 a9 9 0 0 1 9 9 v37 h-250 z"/>
+    <text class="on-acc" x="54" y="351" font-size="14" font-weight="700">Let's Encrypt</text>
+    <text class="on-acc" x="54" y="368" font-size="11.5" opacity="0.9">Certificate authority</text>
+    <text class="ink" x="54" y="396" font-size="12.5">Issues and renews the HTTPS</text>
+    <text class="ink" x="54" y="415" font-size="12.5">certificate for the domain</text>
+  </g>
+  <g>
+    <rect class="box" x="40" y="452" width="250" height="76" rx="9"/>
+    <path class="acc-gray" d="M40 461 a9 9 0 0 1 9 -9 h232 a9 9 0 0 1 9 9 v23 h-250 z"/>
+    <text class="on-acc" x="54" y="473" font-size="14" font-weight="700">Google Fonts</text>
+    <text class="ink" x="54" y="504" font-size="12.5">Web font loaded by the browser</text>
+  </g>
+  <g>
+    <rect class="box" x="395" y="172" width="260" height="168" rx="9"/>
+    <path class="acc-green" d="M395 181 a9 9 0 0 1 9 -9 h242 a9 9 0 0 1 9 9 v37 h-260 z"/>
+    <text class="on-acc" x="409" y="193" font-size="14" font-weight="700">caddy</text>
+    <text class="on-acc" x="409" y="210" font-size="11.5" opacity="0.9">caddy:2.10-alpine · ports 80, 443</text>
+    <text class="ink" x="409" y="238" font-size="12.5">Automatic HTTPS for dmaic.gadea.ai</text>
+    <text class="ink" x="409" y="257" font-size="12.5">Redirects HTTP to HTTPS</text>
+    <text class="ink" x="409" y="276" font-size="12.5">Adds HSTS, compresses responses</text>
+    <text class="ink" x="409" y="295" font-size="12.5">Reverse proxy to app:8124</text>
+  </g>
+  <g>
+    <rect class="box" x="790" y="172" width="380" height="206" rx="9"/>
+    <path class="acc-blue" d="M790 181 a9 9 0 0 1 9 -9 h362 a9 9 0 0 1 9 9 v37 h-380 z"/>
+    <text class="on-acc" x="804" y="193" font-size="14" font-weight="700">app</text>
+    <text class="on-acc" x="804" y="210" font-size="11.5" opacity="0.9">ghcr.io/deg333/dmaic · Rust (axum) · port 8124, internal only</text>
+    <text class="ink mono" x="804" y="238" font-size="12.5">/        static files from web/</text>
+    <text class="ink mono" x="804" y="257" font-size="12.5">/api/*   REST API (projects, admin, auth)</text>
+    <text class="ink" x="804" y="276" font-size="12.5">Accounts: Argon2id passwords, sessions</text>
+    <text class="ink" x="804" y="295" font-size="12.5">Sign-in throttling, CSRF header check</text>
+    <text class="ink" x="804" y="314" font-size="12.5">Health check: dmaic-studio healthcheck</text>
+    <text class="ink" x="804" y="333" font-size="12.5">Runs as unprivileged user 10001</text>
+  </g>
+  <g>
+    <path class="box stroke-purple" d="M840 419 v80 a140 9 0 0 0 280 0 v-80"/>
+    <ellipse class="box stroke-purple" cx="980" cy="419" rx="140" ry="9"/>
+    <text class="ink" x="980" y="445" font-size="13" font-weight="700" text-anchor="middle">dmaic-data volume (/data)</text>
+    <text class="muted mono" x="980" y="464" font-size="11.5" text-anchor="middle">dmaic.sqlite  (SQLite, WAL mode)</text>
+    <text class="muted mono" x="980" y="481" font-size="11.5" text-anchor="middle">backups/  last 10, one per deploy</text>
+  </g>
+  <g>
+    <path class="box stroke-purple" d="M430 419 v64 a95 9 0 0 0 190 0 v-64"/>
+    <ellipse class="box stroke-purple" cx="525" cy="419" rx="95" ry="9"/>
+    <text class="ink" x="525" y="445" font-size="13" font-weight="700" text-anchor="middle">caddy-data volume</text>
+    <text class="muted mono" x="525" y="464" font-size="11.5" text-anchor="middle">certificates and keys</text>
+  </g>
+  <path class="edge-strong" d="M290 216 H395" marker-end="url(#arrow-strong)"/>
+  <rect class="label-bg" x="308.0" y="194.5" width="68.0" height="17.5" rx="3"/>
+  <text class="ink" x="342" y="206" font-size="11.5" text-anchor="middle" font-weight="700">HTTPS 443</text>
+  <rect class="label-bg" x="291.9" y="224.5" width="100.2" height="17.5" rx="3"/>
+  <text class="muted" x="342" y="236" font-size="11.5" text-anchor="middle">dmaic.gadea.ai</text>
+  <path class="edge-strong" d="M655 256 H790" marker-end="url(#arrow-strong)"/>
+  <rect class="label-bg" x="704.1" y="234.5" width="35.8" height="17.5" rx="3"/>
+  <text class="ink" x="722" y="246" font-size="11.5" text-anchor="middle" font-weight="700">HTTP</text>
+  <rect class="label-bg" x="665.5" y="264.5" width="113.0" height="17.5" rx="3"/>
+  <text class="muted" x="722" y="276" font-size="11.5" text-anchor="middle">internal network</text>
+  <path class="edge-strong" d="M980 378 V410" marker-end="url(#arrow-strong)" marker-start="url(#arrow-strong)"/>
+  <rect class="label-bg" x="806.0" y="387" width="164.0" height="17" rx="3"/>
+  <text class="muted" x="970" y="398" font-size="11" text-anchor="end">rusqlite (SQLite bundled)</text>
+  <path class="edge" d="M525 340 V410" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <path class="edge-dash" d="M290 378 H340 V300 H395" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+  <rect class="label-bg" x="300.1" y="300.5" width="35.8" height="17.5" rx="3"/>
+  <text class="muted" x="318" y="312" font-size="11.5" text-anchor="middle">ACME</text>
+  <path class="edge-dash" d="M40 490 H26 V230 H40" marker-end="url(#arrow)"/>
+  <text class="ink" x="40" y="572" font-size="15" font-weight="700">Delivering a new version</text>
+  <g>
+    <rect class="box" x="40" y="590" width="230" height="120" rx="9"/>
+    <path class="acc-gray" d="M40 599 a9 9 0 0 1 9 -9 h212 a9 9 0 0 1 9 9 v37 h-230 z"/>
+    <text class="on-acc" x="54" y="611" font-size="14" font-weight="700">Developer PC</text>
+    <text class="on-acc" x="54" y="628" font-size="11.5" opacity="0.9">C:\dmaic\claude\DMAIC</text>
+    <text class="ink mono" x="54" y="656" font-size="12.5">git push origin main</text>
+    <text class="ink mono" x="54" y="675" font-size="12.5">ssh … deploy/deploy.sh</text>
+  </g>
+  <g>
+    <rect class="box" x="330" y="590" width="240" height="120" rx="9"/>
+    <path class="acc-gray" d="M330 599 a9 9 0 0 1 9 -9 h222 a9 9 0 0 1 9 9 v37 h-240 z"/>
+    <text class="on-acc" x="344" y="611" font-size="14" font-weight="700">GitHub repository</text>
+    <text class="on-acc" x="344" y="628" font-size="11.5" opacity="0.9">github.com/deg333/DMAIC</text>
+    <text class="ink" x="344" y="656" font-size="12.5">Source code, web/, deploy/</text>
+    <text class="ink" x="344" y="675" font-size="12.5">Workflow: Docker image</text>
+  </g>
+  <g>
+    <rect class="box" x="630" y="590" width="250" height="120" rx="9"/>
+    <path class="acc-orange" d="M630 599 a9 9 0 0 1 9 -9 h232 a9 9 0 0 1 9 9 v37 h-250 z"/>
+    <text class="on-acc" x="644" y="611" font-size="14" font-weight="700">GitHub Actions</text>
+    <text class="on-acc" x="644" y="628" font-size="11.5" opacity="0.9">~4 min per build</text>
+    <text class="ink" x="644" y="656" font-size="12.5">Builds the Docker image</text>
+    <text class="ink" x="644" y="675" font-size="12.5">on every push to main</text>
+  </g>
+  <g>
+    <rect class="box" x="940" y="590" width="260" height="120" rx="9"/>
+    <path class="acc-orange" d="M940 599 a9 9 0 0 1 9 -9 h242 a9 9 0 0 1 9 9 v37 h-260 z"/>
+    <text class="on-acc" x="954" y="611" font-size="14" font-weight="700">GitHub Container Registry</text>
+    <text class="on-acc" x="954" y="628" font-size="11.5" opacity="0.9">ghcr.io/deg333/dmaic</text>
+    <text class="ink mono" x="954" y="656" font-size="12.5">:latest   newest main build</text>
+    <text class="ink mono" x="954" y="675" font-size="12.5">:sha-…    every build (rollback)</text>
+  </g>
+  <path class="edge" d="M270 650 H330" marker-end="url(#arrow)"/>
+  <rect class="label-bg" x="282.1" y="628.5" width="35.8" height="17.5" rx="3"/>
+  <text class="muted" x="300" y="640" font-size="11.5" text-anchor="middle">push</text>
+  <path class="edge" d="M570 650 H630" marker-end="url(#arrow)"/>
+  <rect class="label-bg" x="572.5" y="628.5" width="55.1" height="17.5" rx="3"/>
+  <text class="muted" x="600" y="640" font-size="11.5" text-anchor="middle">trigger</text>
+  <path class="edge" d="M880 650 H940" marker-end="url(#arrow)"/>
+  <rect class="label-bg" x="882.5" y="628.5" width="55.1" height="17.5" rx="3"/>
+  <text class="muted" x="910" y="640" font-size="11.5" text-anchor="middle">publish</text>
+  <path class="edge-strong" d="M1070 590 V526" marker-end="url(#arrow-strong)"/>
+  <rect class="label-bg" x="1003.8" y="550.5" width="132.4" height="17.5" rx="3"/>
+  <text class="ink" x="1070" y="562" font-size="11.5" text-anchor="middle">docker compose pull</text>
+  <path class="edge-dash" d="M245 590 V560 H720 V526" marker-end="url(#arrow)"/>
+  <rect class="label-bg" x="236.8" y="541" width="490.5" height="17" rx="3"/>
+  <text class="muted" x="482" y="552" font-size="11" text-anchor="middle">ssh: deploy.sh backs up the database, pulls the image, restarts, checks health</text>
+
+</svg>

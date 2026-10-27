@@ -1,0 +1,603 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1878 820" width="1878" height="820" role="img" aria-labelledby="t d">
+  <title id="t">DMAIC Studio database tables</title>
+  <desc id="d">Twenty SQLite tables in three groups. Accounts and settings: users, sessions, user_settings, site_settings. Projects and sharing: projects, owned by a user, and project_members. Project records: fifteen tables keyed by project_id, including phase entries, notes, process maps, and the Define phase tools.</desc>
+  <style>
+    .bg { fill: #ffffff; }
+    .ink { fill: #18283f; }
+    .muted { fill: #5f6f84; }
+    .box { fill: #f6f8fb; stroke: #c3cdd9; stroke-width: 1.2; }
+    .group { fill: #f2f7f4; stroke: #173f35; stroke-width: 1.4; }
+    .group-soft { fill: #f7f9fc; stroke: #b9c4d1; stroke-width: 1.2; stroke-dasharray: 5 4; }
+    .edge { stroke: #5f6f84; stroke-width: 1.4; fill: none; }
+    .edge-strong { stroke: #18283f; stroke-width: 1.8; fill: none; }
+    .edge-dash { stroke: #5f6f84; stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+    .arrow { fill: #5f6f84; }
+    .arrow-strong { fill: #18283f; }
+    .label-bg { fill: #ffffff; }
+    .row-alt { fill: #eef2f7; }
+    .badge-pk { fill: #f3c64a; }
+    .badge-fk { fill: #9cc2ec; }
+    .badge-text { fill: #18283f; }
+    .acc-green { fill: #173f35; } .stroke-green { stroke: #173f35; }
+    .acc-blue { fill: #347fce; } .stroke-blue { stroke: #347fce; }
+    .acc-purple { fill: #7957c8; } .stroke-purple { stroke: #7957c8; }
+    .acc-orange { fill: #d87735; } .stroke-orange { stroke: #d87735; }
+    .acc-teal { fill: #27966f; } .stroke-teal { stroke: #27966f; }
+    .acc-gray { fill: #3d4a5c; } .stroke-gray { stroke: #3d4a5c; }
+    .on-acc { fill: #ffffff; }
+    text { font-family: "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
+    .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0f1720; }
+      .ink, .badge-text { fill: #e6edf3; }
+      .muted { fill: #9aa7b5; }
+      .box { fill: #17212b; stroke: #3a4756; }
+      .group { fill: #12211c; stroke: #4fae85; }
+      .group-soft { fill: #141c25; stroke: #3a4756; }
+      .edge, .edge-dash { stroke: #9aa7b5; }
+      .edge-strong { stroke: #e6edf3; }
+      .arrow { fill: #9aa7b5; }
+      .arrow-strong { fill: #e6edf3; }
+      .label-bg { fill: #0f1720; }
+      .row-alt { fill: #1c2733; }
+      .badge-pk { fill: #b8912a; }
+      .badge-fk { fill: #3b6ea8; }
+      .acc-green { fill: #2f7a5e; } .stroke-green { stroke: #4fae85; }
+      .acc-blue { fill: #2f6fb4; } .stroke-blue { stroke: #6aa6e6; }
+      .acc-purple { fill: #6a4cb5; } .stroke-purple { stroke: #a58be6; }
+      .acc-orange { fill: #b8642c; } .stroke-orange { stroke: #ea9a63; }
+      .acc-teal { fill: #23805f; } .stroke-teal { stroke: #5cc39d; }
+      .acc-gray { fill: #4a586b; } .stroke-gray { stroke: #8795a8; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow"/>
+    </marker>
+    <marker id="arrow-strong" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-strong"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1878" height="820"/>
+  <text class="ink" x="40" y="44" font-size="22" font-weight="700">DMAIC Studio · database tables</text>
+  <text class="muted" x="40" y="66" font-size="13">SQLite file /data/dmaic.sqlite · schema version 2 · foreign keys enforced · arrows point from the referencing column to the referenced key</text>
+  <rect class="badge-pk" x="1290" y="33" width="20" height="11" rx="2.5"/><text class="badge-text" x="1300" y="41.5" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+  <text class="muted" x="1317" y="42" font-size="12">primary key</text>
+  <rect class="badge-fk" x="1405" y="33" width="20" height="11" rx="2.5"/><text class="badge-text" x="1415" y="41.5" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+  <text class="muted" x="1432" y="42" font-size="12">foreign key</text>
+  <rect class="badge-fk" x="1520" y="33" width="20" height="11" rx="2.5"/><text class="badge-text" x="1530" y="41.5" font-size="8" font-weight="700" text-anchor="middle">UQ</text>
+  <text class="muted" x="1547" y="42" font-size="12">unique (case-insensitive)</text>
+  <rect class="group-soft" x="20" y="100" width="290" height="700" rx="12"/>
+  <text class="ink" x="40" y="126" font-size="14" font-weight="700">Accounts and settings</text>
+  <rect class="group-soft" x="350" y="100" width="290" height="700" rx="12"/>
+  <text class="ink" x="370" y="126" font-size="14" font-weight="700">Projects and sharing</text>
+  <rect class="group-soft" x="680" y="100" width="1178" height="700" rx="12"/>
+  <text class="ink" x="700" y="126" font-size="14" font-weight="700">Project records</text>
+  <text class="muted" x="700" y="145" font-size="12">Every table here has project_id → projects.id and is deleted with its project (ON DELETE CASCADE).</text>
+  <g>
+    <rect class="box" x="55" y="150" width="210" height="162" rx="7"/>
+    <path class="acc-blue" d="M55 157 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="65" y="169" font-size="12.5" font-weight="700">users</text>
+    <rect class="badge-pk" x="63" y="181.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="73" y="190" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="109" y="191" font-size="11.5">id</text>
+    <text class="muted mono" x="256" y="191" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="56" y="196" width="208" height="18"/>
+    <rect class="badge-fk" x="63" y="199.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="73" y="208" font-size="8" font-weight="700" text-anchor="middle">UQ</text>
+    <text class="ink mono" x="109" y="209" font-size="11.5">username</text>
+    <text class="muted mono" x="256" y="209" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="109" y="227" font-size="11.5">password_hash</text>
+    <text class="muted mono" x="256" y="227" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="56" y="232" width="208" height="18"/>
+    <text class="ink mono" x="109" y="245" font-size="11.5">created_at</text>
+    <text class="muted mono" x="256" y="245" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="109" y="263" font-size="11.5">is_admin</text>
+    <text class="muted mono" x="256" y="263" font-size="10" text-anchor="end">INTEGER</text>
+    <rect class="row-alt" x="56" y="268" width="208" height="18"/>
+    <text class="ink mono" x="109" y="281" font-size="11.5">disabled</text>
+    <text class="muted mono" x="256" y="281" font-size="10" text-anchor="end">INTEGER</text>
+    <text class="ink mono" x="109" y="299" font-size="11.5">last_login_at</text>
+    <text class="muted mono" x="256" y="299" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="55" y="362" width="210" height="108" rx="7"/>
+    <path class="acc-blue" d="M55 369 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="65" y="381" font-size="12.5" font-weight="700">sessions</text>
+    <rect class="badge-pk" x="63" y="393.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="73" y="402" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="109" y="403" font-size="11.5">token_hash</text>
+    <text class="muted mono" x="256" y="403" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="56" y="408" width="208" height="18"/>
+    <rect class="badge-fk" x="63" y="411.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="73" y="420" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="109" y="421" font-size="11.5">user_id</text>
+    <text class="muted mono" x="256" y="421" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="109" y="439" font-size="11.5">created_at</text>
+    <text class="muted mono" x="256" y="439" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="56" y="444" width="208" height="18"/>
+    <text class="ink mono" x="109" y="457" font-size="11.5">expires_at</text>
+    <text class="muted mono" x="256" y="457" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="55" y="520" width="210" height="90" rx="7"/>
+    <path class="acc-blue" d="M55 527 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="65" y="539" font-size="12.5" font-weight="700">user_settings</text>
+    <rect class="badge-pk" x="63" y="551.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="73" y="560" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <rect class="badge-fk" x="86" y="551.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="96" y="560" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="109" y="561" font-size="11.5">user_id</text>
+    <text class="muted mono" x="256" y="561" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="56" y="566" width="208" height="18"/>
+    <rect class="badge-pk" x="63" y="569.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="73" y="578" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="109" y="579" font-size="11.5">key</text>
+    <text class="muted mono" x="256" y="579" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="109" y="597" font-size="11.5">value</text>
+    <text class="muted mono" x="256" y="597" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="55" y="660" width="210" height="72" rx="7"/>
+    <path class="acc-gray" d="M55 667 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="65" y="679" font-size="12.5" font-weight="700">site_settings</text>
+    <rect class="badge-pk" x="63" y="691.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="73" y="700" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="109" y="701" font-size="11.5">key</text>
+    <text class="muted mono" x="256" y="701" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="56" y="706" width="208" height="18"/>
+    <text class="ink mono" x="109" y="719" font-size="11.5">value</text>
+    <text class="muted mono" x="256" y="719" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <text class="muted" x="55" y="754" font-size="11.5">Server-wide sign-up rules, set in</text>
+  <text class="muted" x="55" y="770" font-size="11.5">Administration → Site settings.</text>
+  <g>
+    <rect class="box" x="385" y="150" width="210" height="198" rx="7"/>
+    <path class="acc-green" d="M385 157 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="395" y="169" font-size="12.5" font-weight="700">projects</text>
+    <rect class="badge-pk" x="393" y="181.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="403" y="190" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="439" y="191" font-size="11.5">id</text>
+    <text class="muted mono" x="586" y="191" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="386" y="196" width="208" height="18"/>
+    <rect class="badge-fk" x="393" y="199.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="403" y="208" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="439" y="209" font-size="11.5">owner_user_id</text>
+    <text class="muted mono" x="586" y="209" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="439" y="227" font-size="11.5">name</text>
+    <text class="muted mono" x="586" y="227" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="386" y="232" width="208" height="18"/>
+    <text class="ink mono" x="439" y="245" font-size="11.5">problem</text>
+    <text class="muted mono" x="586" y="245" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="439" y="263" font-size="11.5">owner</text>
+    <text class="muted mono" x="586" y="263" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="386" y="268" width="208" height="18"/>
+    <text class="ink mono" x="439" y="281" font-size="11.5">status</text>
+    <text class="muted mono" x="586" y="281" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="439" y="299" font-size="11.5">current_phase</text>
+    <text class="muted mono" x="586" y="299" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="386" y="304" width="208" height="18"/>
+    <text class="ink mono" x="439" y="317" font-size="11.5">created_at</text>
+    <text class="muted mono" x="586" y="317" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="439" y="335" font-size="11.5">updated_at</text>
+    <text class="muted mono" x="586" y="335" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="385" y="428" width="210" height="90" rx="7"/>
+    <path class="acc-green" d="M385 435 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="395" y="447" font-size="12.5" font-weight="700">project_members</text>
+    <rect class="badge-pk" x="393" y="459.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="403" y="468" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <rect class="badge-fk" x="416" y="459.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="426" y="468" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="439" y="469" font-size="11.5">project_id</text>
+    <text class="muted mono" x="586" y="469" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="386" y="474" width="208" height="18"/>
+    <rect class="badge-pk" x="393" y="477.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="403" y="486" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <rect class="badge-fk" x="416" y="477.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="426" y="486" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="439" y="487" font-size="11.5">user_id</text>
+    <text class="muted mono" x="586" y="487" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="439" y="505" font-size="11.5">added_at</text>
+    <text class="muted mono" x="586" y="505" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <text class="muted" x="385" y="540" font-size="11.5">Users the owner shared the project with.</text>
+  <g>
+    <rect class="box" x="700" y="164" width="210" height="234" rx="7"/>
+    <path class="acc-orange" d="M700 171 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="710" y="183" font-size="12.5" font-weight="700">phase_entries</text>
+    <rect class="badge-pk" x="708" y="195.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="718" y="204" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="754" y="205" font-size="11.5">id</text>
+    <text class="muted mono" x="901" y="205" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="210" width="208" height="18"/>
+    <rect class="badge-fk" x="708" y="213.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="718" y="222" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="754" y="223" font-size="11.5">project_id</text>
+    <text class="muted mono" x="901" y="223" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="754" y="241" font-size="11.5">phase</text>
+    <text class="muted mono" x="901" y="241" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="246" width="208" height="18"/>
+    <text class="ink mono" x="754" y="259" font-size="11.5">tab</text>
+    <text class="muted mono" x="901" y="259" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="754" y="277" font-size="11.5">title</text>
+    <text class="muted mono" x="901" y="277" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="282" width="208" height="18"/>
+    <text class="ink mono" x="754" y="295" font-size="11.5">detail</text>
+    <text class="muted mono" x="901" y="295" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="754" y="313" font-size="11.5">owner</text>
+    <text class="muted mono" x="901" y="313" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="318" width="208" height="18"/>
+    <text class="ink mono" x="754" y="331" font-size="11.5">status</text>
+    <text class="muted mono" x="901" y="331" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="754" y="349" font-size="11.5">due_date</text>
+    <text class="muted mono" x="901" y="349" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="354" width="208" height="18"/>
+    <text class="ink mono" x="754" y="367" font-size="11.5">created_at</text>
+    <text class="muted mono" x="901" y="367" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="754" y="385" font-size="11.5">updated_at</text>
+    <text class="muted mono" x="901" y="385" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="700" y="432" width="210" height="126" rx="7"/>
+    <path class="acc-orange" d="M700 439 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="710" y="451" font-size="12.5" font-weight="700">phase_notes</text>
+    <rect class="badge-pk" x="708" y="463.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="718" y="472" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <rect class="badge-fk" x="731" y="463.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="741" y="472" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="754" y="473" font-size="11.5">project_id</text>
+    <text class="muted mono" x="901" y="473" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="478" width="208" height="18"/>
+    <rect class="badge-pk" x="708" y="481.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="718" y="490" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="754" y="491" font-size="11.5">phase</text>
+    <text class="muted mono" x="901" y="491" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="badge-pk" x="708" y="499.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="718" y="508" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="754" y="509" font-size="11.5">tab</text>
+    <text class="muted mono" x="901" y="509" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="514" width="208" height="18"/>
+    <text class="ink mono" x="754" y="527" font-size="11.5">note</text>
+    <text class="muted mono" x="901" y="527" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="754" y="545" font-size="11.5">updated_at</text>
+    <text class="muted mono" x="901" y="545" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="700" y="592" width="210" height="90" rx="7"/>
+    <path class="acc-orange" d="M700 599 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="710" y="611" font-size="12.5" font-weight="700">process_maps</text>
+    <rect class="badge-pk" x="708" y="623.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="718" y="632" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <rect class="badge-fk" x="731" y="623.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="741" y="632" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="754" y="633" font-size="11.5">project_id</text>
+    <text class="muted mono" x="901" y="633" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="701" y="638" width="208" height="18"/>
+    <text class="ink mono" x="754" y="651" font-size="11.5">xml</text>
+    <text class="muted mono" x="901" y="651" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="754" y="669" font-size="11.5">updated_at</text>
+    <text class="muted mono" x="901" y="669" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="932" y="164" width="210" height="270" rx="7"/>
+    <path class="acc-purple" d="M932 171 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="942" y="183" font-size="12.5" font-weight="700">define_charters</text>
+    <rect class="badge-pk" x="940" y="195.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="950" y="204" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <rect class="badge-fk" x="963" y="195.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="973" y="204" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="986" y="205" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1133" y="205" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="210" width="208" height="18"/>
+    <text class="ink mono" x="986" y="223" font-size="11.5">problem</text>
+    <text class="muted mono" x="1133" y="223" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="241" font-size="11.5">business_case</text>
+    <text class="muted mono" x="1133" y="241" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="246" width="208" height="18"/>
+    <text class="ink mono" x="986" y="259" font-size="11.5">goal</text>
+    <text class="muted mono" x="1133" y="259" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="277" font-size="11.5">in_scope</text>
+    <text class="muted mono" x="1133" y="277" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="282" width="208" height="18"/>
+    <text class="ink mono" x="986" y="295" font-size="11.5">out_scope</text>
+    <text class="muted mono" x="1133" y="295" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="313" font-size="11.5">constraints</text>
+    <text class="muted mono" x="1133" y="313" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="318" width="208" height="18"/>
+    <text class="ink mono" x="986" y="331" font-size="11.5">assumptions</text>
+    <text class="muted mono" x="1133" y="331" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="349" font-size="11.5">sponsor</text>
+    <text class="muted mono" x="1133" y="349" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="354" width="208" height="18"/>
+    <text class="ink mono" x="986" y="367" font-size="11.5">start_date</text>
+    <text class="muted mono" x="1133" y="367" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="385" font-size="11.5">end_date</text>
+    <text class="muted mono" x="1133" y="385" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="390" width="208" height="18"/>
+    <text class="ink mono" x="986" y="403" font-size="11.5">budget</text>
+    <text class="muted mono" x="1133" y="403" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="421" font-size="11.5">updated_at</text>
+    <text class="muted mono" x="1133" y="421" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="932" y="468" width="210" height="180" rx="7"/>
+    <path class="acc-purple" d="M932 475 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="942" y="487" font-size="12.5" font-weight="700">define_risks</text>
+    <rect class="badge-pk" x="940" y="499.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="950" y="508" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="986" y="509" font-size="11.5">id</text>
+    <text class="muted mono" x="1133" y="509" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="514" width="208" height="18"/>
+    <rect class="badge-fk" x="940" y="517.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="950" y="526" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="986" y="527" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1133" y="527" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="545" font-size="11.5">description</text>
+    <text class="muted mono" x="1133" y="545" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="550" width="208" height="18"/>
+    <text class="ink mono" x="986" y="563" font-size="11.5">impact</text>
+    <text class="muted mono" x="1133" y="563" font-size="10" text-anchor="end">INTEGER</text>
+    <text class="ink mono" x="986" y="581" font-size="11.5">probability</text>
+    <text class="muted mono" x="1133" y="581" font-size="10" text-anchor="end">INTEGER</text>
+    <rect class="row-alt" x="933" y="586" width="208" height="18"/>
+    <text class="ink mono" x="986" y="599" font-size="11.5">mitigation</text>
+    <text class="muted mono" x="1133" y="599" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="986" y="617" font-size="11.5">status</text>
+    <text class="muted mono" x="1133" y="617" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="933" y="622" width="208" height="18"/>
+    <text class="ink mono" x="986" y="635" font-size="11.5">created_at</text>
+    <text class="muted mono" x="1133" y="635" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="1164" y="164" width="210" height="198" rx="7"/>
+    <path class="acc-purple" d="M1164 171 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1174" y="183" font-size="12.5" font-weight="700">define_stakeholders</text>
+    <rect class="badge-pk" x="1172" y="195.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1182" y="204" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1218" y="205" font-size="11.5">id</text>
+    <text class="muted mono" x="1365" y="205" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="210" width="208" height="18"/>
+    <rect class="badge-fk" x="1172" y="213.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1182" y="222" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1218" y="223" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1365" y="223" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="241" font-size="11.5">name</text>
+    <text class="muted mono" x="1365" y="241" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="246" width="208" height="18"/>
+    <text class="ink mono" x="1218" y="259" font-size="11.5">role</text>
+    <text class="muted mono" x="1365" y="259" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="277" font-size="11.5">power</text>
+    <text class="muted mono" x="1365" y="277" font-size="10" text-anchor="end">INTEGER</text>
+    <rect class="row-alt" x="1165" y="282" width="208" height="18"/>
+    <text class="ink mono" x="1218" y="295" font-size="11.5">interest</text>
+    <text class="muted mono" x="1365" y="295" font-size="10" text-anchor="end">INTEGER</text>
+    <text class="ink mono" x="1218" y="313" font-size="11.5">strategy</text>
+    <text class="muted mono" x="1365" y="313" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="318" width="208" height="18"/>
+    <text class="ink mono" x="1218" y="331" font-size="11.5">engagement</text>
+    <text class="muted mono" x="1365" y="331" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="349" font-size="11.5">created_at</text>
+    <text class="muted mono" x="1365" y="349" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="1164" y="396" width="210" height="180" rx="7"/>
+    <path class="acc-purple" d="M1164 403 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1174" y="415" font-size="12.5" font-weight="700">define_communications</text>
+    <rect class="badge-pk" x="1172" y="427.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1182" y="436" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1218" y="437" font-size="11.5">id</text>
+    <text class="muted mono" x="1365" y="437" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="442" width="208" height="18"/>
+    <rect class="badge-fk" x="1172" y="445.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1182" y="454" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1218" y="455" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1365" y="455" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="473" font-size="11.5">audience</text>
+    <text class="muted mono" x="1365" y="473" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="478" width="208" height="18"/>
+    <text class="ink mono" x="1218" y="491" font-size="11.5">purpose</text>
+    <text class="muted mono" x="1365" y="491" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="509" font-size="11.5">channel</text>
+    <text class="muted mono" x="1365" y="509" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="514" width="208" height="18"/>
+    <text class="ink mono" x="1218" y="527" font-size="11.5">cadence</text>
+    <text class="muted mono" x="1365" y="527" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="545" font-size="11.5">owner</text>
+    <text class="muted mono" x="1365" y="545" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="550" width="208" height="18"/>
+    <text class="ink mono" x="1218" y="563" font-size="11.5">created_at</text>
+    <text class="muted mono" x="1365" y="563" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="1164" y="610" width="210" height="126" rx="7"/>
+    <path class="acc-purple" d="M1164 617 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1174" y="629" font-size="12.5" font-weight="700">define_sipoc</text>
+    <rect class="badge-pk" x="1172" y="641.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1182" y="650" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1218" y="651" font-size="11.5">id</text>
+    <text class="muted mono" x="1365" y="651" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="656" width="208" height="18"/>
+    <rect class="badge-fk" x="1172" y="659.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1182" y="668" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1218" y="669" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1365" y="669" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="687" font-size="11.5">stage</text>
+    <text class="muted mono" x="1365" y="687" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1165" y="692" width="208" height="18"/>
+    <text class="ink mono" x="1218" y="705" font-size="11.5">value</text>
+    <text class="muted mono" x="1365" y="705" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1218" y="723" font-size="11.5">sort_order</text>
+    <text class="muted mono" x="1365" y="723" font-size="10" text-anchor="end">INTEGER</text>
+  </g>
+  <g>
+    <rect class="box" x="1396" y="164" width="210" height="108" rx="7"/>
+    <path class="acc-purple" d="M1396 171 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1406" y="183" font-size="12.5" font-weight="700">define_voc_segments</text>
+    <rect class="badge-pk" x="1404" y="195.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1414" y="204" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1450" y="205" font-size="11.5">id</text>
+    <text class="muted mono" x="1597" y="205" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="210" width="208" height="18"/>
+    <rect class="badge-fk" x="1404" y="213.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1414" y="222" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1450" y="223" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1597" y="223" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1450" y="241" font-size="11.5">name</text>
+    <text class="muted mono" x="1597" y="241" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="246" width="208" height="18"/>
+    <text class="ink mono" x="1450" y="259" font-size="11.5">created_at</text>
+    <text class="muted mono" x="1597" y="259" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="1396" y="306" width="210" height="180" rx="7"/>
+    <path class="acc-purple" d="M1396 313 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1406" y="325" font-size="12.5" font-weight="700">define_voc_items</text>
+    <rect class="badge-pk" x="1404" y="337.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1414" y="346" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1450" y="347" font-size="11.5">id</text>
+    <text class="muted mono" x="1597" y="347" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="352" width="208" height="18"/>
+    <rect class="badge-fk" x="1404" y="355.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1414" y="364" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1450" y="365" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1597" y="365" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="badge-fk" x="1404" y="373.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1414" y="382" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1450" y="383" font-size="11.5">segment_id</text>
+    <text class="muted mono" x="1597" y="383" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="388" width="208" height="18"/>
+    <text class="ink mono" x="1450" y="401" font-size="11.5">voice</text>
+    <text class="muted mono" x="1597" y="401" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1450" y="419" font-size="11.5">issue</text>
+    <text class="muted mono" x="1597" y="419" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="424" width="208" height="18"/>
+    <text class="ink mono" x="1450" y="437" font-size="11.5">need</text>
+    <text class="muted mono" x="1597" y="437" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1450" y="455" font-size="11.5">kano</text>
+    <text class="muted mono" x="1597" y="455" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="460" width="208" height="18"/>
+    <text class="ink mono" x="1450" y="473" font-size="11.5">created_at</text>
+    <text class="muted mono" x="1597" y="473" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="1396" y="520" width="210" height="180" rx="7"/>
+    <path class="acc-purple" d="M1396 527 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1406" y="539" font-size="12.5" font-weight="700">define_evidence</text>
+    <rect class="badge-pk" x="1404" y="551.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1414" y="560" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1450" y="561" font-size="11.5">id</text>
+    <text class="muted mono" x="1597" y="561" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="566" width="208" height="18"/>
+    <rect class="badge-fk" x="1404" y="569.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1414" y="578" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1450" y="579" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1597" y="579" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1450" y="597" font-size="11.5">title</text>
+    <text class="muted mono" x="1597" y="597" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="602" width="208" height="18"/>
+    <text class="ink mono" x="1450" y="615" font-size="11.5">detail</text>
+    <text class="muted mono" x="1597" y="615" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1450" y="633" font-size="11.5">file_name</text>
+    <text class="muted mono" x="1597" y="633" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1397" y="638" width="208" height="18"/>
+    <text class="ink mono" x="1450" y="651" font-size="11.5">mime_type</text>
+    <text class="muted mono" x="1597" y="651" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1450" y="669" font-size="11.5">file_data</text>
+    <text class="muted mono" x="1597" y="669" font-size="10" text-anchor="end">BLOB</text>
+    <rect class="row-alt" x="1397" y="674" width="208" height="18"/>
+    <text class="ink mono" x="1450" y="687" font-size="11.5">created_at</text>
+    <text class="muted mono" x="1597" y="687" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="1628" y="164" width="210" height="108" rx="7"/>
+    <path class="acc-purple" d="M1628 171 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1638" y="183" font-size="12.5" font-weight="700">define_affinity_groups</text>
+    <rect class="badge-pk" x="1636" y="195.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="204" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1682" y="205" font-size="11.5">id</text>
+    <text class="muted mono" x="1829" y="205" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1629" y="210" width="208" height="18"/>
+    <rect class="badge-fk" x="1636" y="213.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="222" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1682" y="223" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1829" y="223" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1682" y="241" font-size="11.5">name</text>
+    <text class="muted mono" x="1829" y="241" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1629" y="246" width="208" height="18"/>
+    <text class="ink mono" x="1682" y="259" font-size="11.5">sort_order</text>
+    <text class="muted mono" x="1829" y="259" font-size="10" text-anchor="end">INTEGER</text>
+  </g>
+  <g>
+    <rect class="box" x="1628" y="306" width="210" height="126" rx="7"/>
+    <path class="acc-purple" d="M1628 313 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1638" y="325" font-size="12.5" font-weight="700">define_affinity_cards</text>
+    <rect class="badge-pk" x="1636" y="337.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="346" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1682" y="347" font-size="11.5">id</text>
+    <text class="muted mono" x="1829" y="347" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1629" y="352" width="208" height="18"/>
+    <rect class="badge-fk" x="1636" y="355.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="364" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1682" y="365" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1829" y="365" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="badge-fk" x="1636" y="373.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="382" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1682" y="383" font-size="11.5">group_id</text>
+    <text class="muted mono" x="1829" y="383" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1629" y="388" width="208" height="18"/>
+    <text class="ink mono" x="1682" y="401" font-size="11.5">text</text>
+    <text class="muted mono" x="1829" y="401" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1682" y="419" font-size="11.5">created_at</text>
+    <text class="muted mono" x="1829" y="419" font-size="10" text-anchor="end">TEXT</text>
+  </g>
+  <g>
+    <rect class="box" x="1628" y="466" width="210" height="144" rx="7"/>
+    <path class="acc-purple" d="M1628 473 a7 7 0 0 1 7 -7 h196 a7 7 0 0 1 7 7 v21 h-210 z"/>
+    <text class="on-acc mono" x="1638" y="485" font-size="12.5" font-weight="700">define_ctq_nodes</text>
+    <rect class="badge-pk" x="1636" y="497.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="506" font-size="8" font-weight="700" text-anchor="middle">PK</text>
+    <text class="ink mono" x="1682" y="507" font-size="11.5">id</text>
+    <text class="muted mono" x="1829" y="507" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1629" y="512" width="208" height="18"/>
+    <rect class="badge-fk" x="1636" y="515.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="524" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1682" y="525" font-size="11.5">project_id</text>
+    <text class="muted mono" x="1829" y="525" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="badge-fk" x="1636" y="533.5" width="20" height="11" rx="2.5"/>
+    <text class="badge-text" x="1646" y="542" font-size="8" font-weight="700" text-anchor="middle">FK</text>
+    <text class="ink mono" x="1682" y="543" font-size="11.5">parent_id</text>
+    <text class="muted mono" x="1829" y="543" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1629" y="548" width="208" height="18"/>
+    <text class="ink mono" x="1682" y="561" font-size="11.5">node_type</text>
+    <text class="muted mono" x="1829" y="561" font-size="10" text-anchor="end">TEXT</text>
+    <text class="ink mono" x="1682" y="579" font-size="11.5">title</text>
+    <text class="muted mono" x="1829" y="579" font-size="10" text-anchor="end">TEXT</text>
+    <rect class="row-alt" x="1629" y="584" width="208" height="18"/>
+    <text class="ink mono" x="1682" y="597" font-size="11.5">sort_order</text>
+    <text class="muted mono" x="1829" y="597" font-size="10" text-anchor="end">INTEGER</text>
+  </g>
+  <text class="muted" x="700" y="785" font-size="11.5">Orange: work items, notes, and process maps for every phase tab · Purple: Define phase tools</text>
+  <path class="edge" d="M55 559 H36 V419"/>
+  <path class="edge" d="M55 419 H36"/>
+  <circle class="arrow" cx="36" cy="419" r="2.6"/>
+  <path class="edge" d="M36 419 V189 H55" marker-end="url(#arrow)"/>
+  <path class="edge" d="M385 485 H326 V207"/>
+  <path class="edge" d="M385 207 H326"/>
+  <circle class="arrow" cx="326" cy="207" r="2.6"/>
+  <path class="edge" d="M326 207 V189 H265" marker-end="url(#arrow)"/>
+  <path class="edge" d="M595 467 H617 V460"/>
+  <path class="edge" d="M680 460 H617"/>
+  <circle class="arrow" cx="617" cy="460" r="2.6"/>
+  <path class="edge" d="M617 460 V189 H595" marker-end="url(#arrow)"/>
+  <rect class="label-bg" x="612.7" y="441" width="71.6" height="17" rx="3"/>
+  <text class="ink" x="648.5" y="452" font-size="11" text-anchor="middle">project_id</text>
+  <path class="edge-dash" d="M1396 381 H1386 V203 H1396" marker-end="url(#arrow)"/>
+  <path class="edge-dash" d="M1628 381 H1618 V203 H1628" marker-end="url(#arrow)"/>
+  <path class="edge-dash" d="M1838 541 H1850 V505 H1838" marker-end="url(#arrow)"/>
+  <text class="muted" x="1628" y="628" font-size="11">Dashed: segment and group links are cleared</text>
+  <text class="muted" x="1628" y="643" font-size="11">when deleted; child CTQ nodes are deleted</text>
+  <text class="muted" x="1628" y="658" font-size="11">with their parent.</text>
+
+</svg>
