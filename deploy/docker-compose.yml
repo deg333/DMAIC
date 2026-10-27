@@ -1,0 +1,43 @@
+# DMAIC Studio behind Caddy. Caddy gets an HTTPS certificate for DMAIC_DOMAIN
+# automatically and is the only service reachable from outside.
+# Settings come from deploy/.env (copy .env.example). Run updates with ./deploy.sh.
+name: dmaic
+
+services:
+  app:
+    image: ${DMAIC_IMAGE:-ghcr.io/deg333/dmaic:latest}
+    restart: unless-stopped
+    environment:
+      DMAIC_SECURE_COOKIES: "true"
+      DMAIC_TRUST_PROXY: "true"
+    volumes:
+      - dmaic-data:/data
+    expose:
+      - "8124"
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    environment:
+      DMAIC_DOMAIN: ${DMAIC_DOMAIN:?Set DMAIC_DOMAIN in deploy/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  # The database volume. It is "external" so `docker compose down -v` can never delete it,
+  # and so it is shared with an earlier `docker run -v dmaic-data:/data` setup.
+  dmaic-data:
+    external: true
+    name: ${DMAIC_VOLUME:-dmaic-data}
+  # Caddy's certificates and keys.
+  caddy-data:
+  caddy-config:

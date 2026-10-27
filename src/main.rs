@@ -28,6 +28,8 @@ pub struct Config {
     pub allow_signup: bool,
     pub signup_code: Option<String>,
     pub secure_cookies: bool,
+    /// Behind a reverse proxy, take the client address from X-Forwarded-For.
+    pub trust_proxy: bool,
 }
 
 #[derive(Clone)]
@@ -63,12 +65,24 @@ async fn main() -> anyhow::Result<()> {
     let db_path = PathBuf::from(env_or("DMAIC_DB", "data/dmaic.sqlite"));
     let web_dir = PathBuf::from(env_or("DMAIC_WEB_DIR", "web"));
     let max_import_mb: usize = env_or("DMAIC_MAX_IMPORT_MB", "256").parse()?;
+    let args: Vec<String> = std::env::args().skip(1).collect();
+
+    // Used by Docker's HEALTHCHECK; must not touch the database.
+    if args.first().is_some_and(|command| command == "healthcheck") {
+        return healthcheck(bind.port());
+    }
+
     let mut conn = db::open(&db_path)?;
 
-    // Recovery commands, e.g. `dmaic-studio reset-password admin`.
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    // Maintenance commands, e.g. `dmaic-studio reset-password admin`.
     match args.as_slice() {
         [] => {}
+        [command, path] if command == "backup" => {
+            // VACUUM INTO writes a consistent copy even while the server is running.
+            conn.execute("VACUUM INTO ?1", [path])?;
+            println!("Backup written to {path}");
+            return Ok(());
+        }
         [command, username] if command == "reset-password" => {
             let password = admin::cli_reset_password(&conn, username)?;
             println!("New password for {username}: {password}");
@@ -79,7 +93,9 @@ async fn main() -> anyhow::Result<()> {
             println!("{username} is now an administrator.");
             return Ok(());
         }
-        _ => anyhow::bail!("usage: dmaic-studio [reset-password <username> | make-admin <username>]"),
+        _ => anyhow::bail!(
+            "usage: dmaic-studio [reset-password <username> | make-admin <username> | backup <file> | healthcheck]"
+        ),
     }
 
     let admin_username = env_or("DMAIC_ADMIN_USERNAME", "admin");
@@ -104,6 +120,7 @@ async fn main() -> anyhow::Result<()> {
         allow_signup: env_flag("DMAIC_ALLOW_SIGNUP", true),
         signup_code: std::env::var("DMAIC_SIGNUP_CODE").ok().map(|code| code.trim().to_owned()).filter(|code| !code.is_empty()),
         secure_cookies: env_flag("DMAIC_SECURE_COOKIES", false),
+        trust_proxy: env_flag("DMAIC_TRUST_PROXY", false),
     };
     let state = AppState {
         db: Arc::new(Mutex::new(conn)),
@@ -198,6 +215,21 @@ async fn response_headers(request: Request, next: Next) -> Response {
         headers.entry(header::CONTENT_SECURITY_POLICY).or_insert(HeaderValue::from_static(CONTENT_SECURITY_POLICY));
     }
     response
+}
+
+/// Exits successfully if the local server answers GET /api/health with 200.
+fn healthcheck(port: u16) -> anyhow::Result<()> {
+    use std::io::{Read, Write};
+    let timeout = std::time::Duration::from_secs(3);
+    let mut stream = std::net::TcpStream::connect_timeout(&SocketAddr::from(([127, 0, 0, 1], port)), timeout)?;
+    stream.set_read_timeout(Some(timeout))?;
+    stream.write_all(b"GET /api/health HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n")?;
+    let mut response = String::new();
+    stream.read_to_string(&mut response)?;
+    if !response.starts_with("HTTP/1.1 200") {
+        anyhow::bail!("unhealthy: {}", response.lines().next().unwrap_or("no response"));
+    }
+    Ok(())
 }
 
 async fn shutdown_signal() {

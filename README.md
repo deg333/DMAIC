@@ -25,6 +25,63 @@ cargo run --release
 
 The server serves the `web/` folder and creates `data/dmaic.sqlite` on first start. SQLite is compiled into the binary, so nothing else needs to be installed. For a deployment, copy the binary from `target/release/` together with the `web/` folder.
 
+## Deploy to a server with HTTPS
+
+The `deploy/` folder runs DMAIC Studio behind [Caddy](https://caddyserver.com), which gets and renews a free HTTPS certificate automatically. Images are built by GitHub Actions, so the server never compiles anything.
+
+**How updates flow:** push to `main` → the **Docker image** workflow builds and publishes `ghcr.io/deg333/dmaic` (about 5 minutes; check the repository's **Actions** tab) → on the server, run `./deploy.sh`.
+
+### One-time setup
+
+1. **A domain name.** Create a DNS `A` record pointing your domain (for example `dmaic.yourcompany.com`) at the server's IP address. Caddy needs a name, not a bare IP, to get a trusted certificate.
+2. **Open ports 80 and 443** in the server's firewall. Port 8124 no longer needs to be reachable; close it once the new setup is running.
+3. **Let the server download the image.** After the first workflow run, open the `dmaic` package on GitHub (your profile → **Packages**) → **Package settings** → **Change visibility** → **Public**. Alternatively keep it private and, on the server, run `docker login ghcr.io -u deg333` with a GitHub personal access token that has the `read:packages` scope.
+4. **On the server** (Linux with Docker and the Compose plugin):
+
+   ```sh
+   git clone https://github.com/deg333/DMAIC.git
+   cd DMAIC/deploy
+   cp .env.example .env
+   nano .env                 # set DMAIC_DOMAIN
+   ./deploy.sh --stop-old
+   ```
+
+   `--stop-old` is only needed the first time, if DMAIC Studio is already running from a plain `docker run` command. The script stops that container (it is kept, not deleted) and takes over the same `dmaic-data` volume, so all accounts and projects carry over.
+
+### Updating
+
+```sh
+ssh you@your-server 'DMAIC/deploy/deploy.sh'
+```
+
+Each run updates the deploy files from GitHub, pulls the newest image, backs up the database, restarts the app and Caddy, and waits until the app reports healthy. The site is unavailable for a few seconds during the restart. Database upgrades run automatically when the new version starts.
+
+### Backups and rolling back
+
+Every deploy saves a copy of the database to `backups/` inside the `dmaic-data` volume and keeps the newest 10 (`KEEP_BACKUPS` in `.env`). Copy them off the server regularly, because they live on the same disk. To take one at any time:
+
+```sh
+docker compose exec app dmaic-studio backup /data/backups/manual.sqlite
+```
+
+To run an earlier version, find its `sha-…` tag under the package's versions on GitHub, set `DMAIC_IMAGE=ghcr.io/deg333/dmaic:sha-1a2b3c4` in `.env`, and run `./deploy.sh` again. If you also need the data from before an update, restore the backup taken just before it:
+
+```sh
+docker compose stop app
+docker compose run --rm --no-deps --entrypoint sh app -c \
+  'cp /data/backups/dmaic-20261027-041236.sqlite /data/dmaic.sqlite && rm -f /data/dmaic.sqlite-wal /data/dmaic.sqlite-shm'
+docker compose start app
+```
+
+### Useful commands (run in `DMAIC/deploy`)
+
+| Command | Purpose |
+| --- | --- |
+| `docker compose ps` | Show whether the app and Caddy are running and healthy |
+| `docker compose logs -f app` | Follow the app log |
+| `docker compose logs caddy` | See certificate or proxy problems |
+| `docker compose exec app dmaic-studio reset-password <username>` | Recover an account |
+
 ## Configuration
 
 All settings are environment variables:
@@ -40,14 +97,15 @@ All settings are environment variables:
 | `DMAIC_SIGNUP_CODE` | unset | Default sign-up code. **Administration → Site settings** overrides it once saved. |
 | `DMAIC_SECURE_COOKIES` | `false` | Set to `true` when the site is served over HTTPS, so session cookies are only sent over HTTPS. |
 | `DMAIC_MAX_IMPORT_MB` | `256` | Largest backup file accepted by **Import database**. |
+| `DMAIC_TRUST_PROXY` | `false` | Set to `true` behind a reverse proxy, so sign-in throttling uses the visitor's address from `X-Forwarded-For`. The `deploy/` setup sets this and `DMAIC_SECURE_COOKIES`. |
 
 ## Production checklist
 
-- **Serve over HTTPS.** Put the server behind a reverse proxy that handles TLS (Caddy, nginx, Traefik, IIS, or a cloud load balancer), and set `DMAIC_SECURE_COOKIES=true`. Passwords and session cookies must not travel over plain HTTP.
+- **Serve over HTTPS.** Use the `deploy/` setup above, or put the server behind another reverse proxy that handles TLS and set `DMAIC_SECURE_COOKIES=true` and `DMAIC_TRUST_PROXY=true`. Passwords and session cookies must not travel over plain HTTP.
 - **Finish setup right away.** Until the administrator account exists, whoever reaches the site first can create it. Open the site and set it up as soon as you deploy, keep the server private until then, or set `DMAIC_ADMIN_PASSWORD` so the account exists from the start.
 - **Control who can sign up.** In **Administration → Site settings**, turn off self sign-up and add users yourself, or require a sign-up code.
-- **Back up the database.** The database runs in WAL mode, so copy it with `sqlite3 /data/dmaic.sqlite ".backup /backups/dmaic.sqlite"` rather than copying the file while the server is running. Alternatively, stop the server and copy `dmaic.sqlite` together with any `-wal` and `-shm` files.
-- **Monitor health.** `GET /api/health` returns `ok` while the server is up.
+- **Back up the database.** `dmaic-studio backup <file>` writes a consistent copy while the server keeps running (`deploy.sh` does this on every update). Do not copy `dmaic.sqlite` directly while the server is running: it uses WAL mode, and the copy can be incomplete.
+- **Monitor health.** `GET /api/health` returns `ok` while the server is up. The Docker image's built-in health check uses it, so `docker ps` shows `healthy` or `unhealthy`.
 
 ## Administration
 
@@ -63,6 +121,7 @@ If you are locked out, run one of these on the server (for Docker, prefix with `
 ```sh
 dmaic-studio reset-password admin     # prints a new random password and re-enables the account
 dmaic-studio make-admin <username>    # gives an existing account administrator rights
+dmaic-studio backup <file>            # writes a consistent copy of the database
 ```
 
 ## Accounts and sharing
@@ -101,5 +160,7 @@ Evidence files can be up to 10 MB each. Images (PNG, JPEG, GIF, WebP) and PDFs p
 | `src/db.rs` | Schema and database helpers |
 | `src/seed.rs` | Sample project for new accounts |
 | `web/` | Frontend (HTML, CSS, JavaScript, BPMN.js) |
+| `deploy/` | Docker Compose, Caddy, and `deploy.sh` for running on a server with HTTPS |
+| `.github/workflows/docker.yml` | Builds and publishes the Docker image to ghcr.io on every push to `main` |
 
 The API lives under `/api`. Every request that changes data must send the header `X-DMAIC: 1`. Browsers cannot add custom headers to cross-site form posts, so this check blocks cross-site request forgery alongside the SameSite cookie.

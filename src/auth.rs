@@ -190,6 +190,24 @@ impl LoginLimiter {
     }
 }
 
+/// The visitor's address. Behind a trusted proxy (Caddy) this is the last
+/// X-Forwarded-For entry, which the proxy itself appends; earlier entries can be forged.
+fn client_ip(state: &AppState, headers: &HeaderMap, peer: SocketAddr) -> String {
+    if state.config.trust_proxy {
+        let forwarded = headers
+            .get_all("x-forwarded-for")
+            .iter()
+            .filter_map(|value| value.to_str().ok())
+            .flat_map(|value| value.split(','))
+            .map(str::trim)
+            .rfind(|value| value.parse::<std::net::IpAddr>().is_ok());
+        if let Some(ip) = forwarded {
+            return ip.to_owned();
+        }
+    }
+    peer.ip().to_string()
+}
+
 pub async fn status(State(state): State<AppState>, headers: HeaderMap) -> AppResult<Json<Value>> {
     let token = session_token(&headers);
     let config = state.config.clone();
@@ -279,10 +297,11 @@ pub async fn setup(State(state): State<AppState>, Json(input): Json<Credentials>
 pub async fn login(
     State(state): State<AppState>,
     ConnectInfo(address): ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
     Json(input): Json<Credentials>,
 ) -> AppResult<Response> {
     let username = input.username.trim().to_owned();
-    let limiter_key = format!("{}|{}", address.ip(), username.to_lowercase());
+    let limiter_key = format!("{}|{}", client_ip(&state, &headers, address), username.to_lowercase());
     if state.limiter.is_blocked(&limiter_key) {
         return Err(AppError::Http(
             axum::http::StatusCode::TOO_MANY_REQUESTS,
